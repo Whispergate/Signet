@@ -1,0 +1,8 @@
+{
+  "rabbitmq_host": "10.5.99.6",
+  "rabbitmq_password": "1l3LwALv8Q6ZVRQdqOvSwbSmsQIzdy",
+  "mythic_server_host": "10.5.99.6",
+  "mythic_server_grpc_port": 17444,
+  "mythic_server_port": 17443,
+  "debug_level": "debug"
+}
