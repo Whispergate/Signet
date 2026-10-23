@@ -25,7 +25,7 @@ Signet is a code signing wrapper payload type for [Mythic C2](https://github.com
 
 ### Custom payload upload
 
-Upload any EXE, DLL, MSI, or other binary file directly via the `0.0 Custom Payload` toggle. Signet signs it without requiring a Mythic-wrapped agent. Useful for signing binaries from other C2 frameworks or standalone tools. The uploaded file is retrieved via `SendMythicRPCFileGetContent` at build time.
+Upload any EXE, DLL, MSI, or other binary file directly via the `0.0 Custom Payload` toggle. Signet signs it without requiring a Mythic-wrapped agent. Useful for signing binaries from other C2 frameworks or standalone tools. The uploaded file is retrieved via `getFileFromMythic` at build time.
 
 ### Authenticode signing
 

@@ -174,7 +174,7 @@ Signet applies Authenticode signatures to wrapped Mythic payloads using `osslsig
 
 ## Custom Payload Upload
 
-*When `0.0 Custom Payload = True`, the operator uploads any binary file directly via `0.1 Custom Payload File`. The file UUID is passed to `SendMythicRPCFileGetContent` at build time to retrieve the raw bytes, which are then signed in place of the wrapped payload.*
+*When `0.0 Custom Payload = True`, the operator uploads any binary file directly via `0.1 Custom Payload File`. The file UUID is passed to `getFileFromMythic` at build time to retrieve the raw bytes, which are then signed in place of the wrapped payload.*
 
 **OPSEC Considerations**
 - The uploaded file is stored in Mythic's file store and persists until deleted. If the Mythic server is compromised, the unsigned binary is recoverable.
@@ -194,7 +194,7 @@ Signet applies Authenticode signatures to wrapped Mythic payloads using `osslsig
 
 ## Wrapped Payload Compatibility
 
-*Signet wraps any Mythic agent that produces a signable binary. The `wrapped_payloads` list determines which agents appear in the Mythic UI.*
+*Signet wraps any Mythic agent that produces a signable binary. The `wrapper_payload_requirements` definition determines which payloads are compatible based on OS, architecture, and format metadata.*
 
 **OPSEC Considerations**
 - Signet signs whatever bytes it receives from `self.wrapped_payload` without inspecting the file format. If the wrapped agent produces raw shellcode, an archive, or a non-PE file, `osslsigncode` will either fail silently or produce a malformed output.

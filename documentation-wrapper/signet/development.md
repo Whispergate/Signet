@@ -71,7 +71,7 @@ Signet is a Mythic C2 wrapper payload type that takes any wrapped payload binary
 
 ### Pipeline stages
 
-1. **Gathering Payload** : when `0.0 Custom Payload` is enabled, the builder retrieves the uploaded file via `SendMythicRPCFileGetContent(MythicRPCFileGetContentMessage(AgentFileId=uuid))`. Otherwise, Mythic provides the raw wrapped payload bytes via `self.wrapped_payload`. The builder verifies the payload is present and reports its size.
+1. **Gathering Payload** : when `0.0 Custom Payload` is enabled, the builder retrieves the uploaded file via `getFileFromMythic(agentFileId=uuid)`. Otherwise, Mythic provides the raw wrapped payload bytes via `self.wrapped_payload`. The builder verifies the payload is present and reports its size.
 2. **Preparing Certificate** : based on `1.0 Signing Mode`, one of four code paths runs:
    - *Generate CA + Cert*: `generate_ca()` creates a self-signed CA, then `create_code_signing_cert()` issues a code signing cert from it.
    - *Upload CA*: `load_ca_from_bytes()` loads the uploaded CA with PFX/PEM/DER auto-detection, optionally `extract_ca_attributes()` copies subject fields, then `create_code_signing_cert()` issues a cert.
@@ -89,7 +89,7 @@ Every BuildParameter defined in [builder.py](Payload_Type/signet/signet/builder.
 ### 0.0 – 0.1 · Custom Payload
 
 - **0.0 Custom Payload** : `Boolean` (default `False`): when enabled, the operator uploads a custom binary file to sign instead of using the Mythic-wrapped payload. Use this to sign binaries from external tools or other C2 frameworks.
-- **0.1 Custom Payload File** : `File`: the binary file (EXE, DLL, MSI, etc.) to sign. Replaces the wrapped payload entirely. Retrieved at build time via `SendMythicRPCFileGetContent`. Only visible when `0.0 Custom Payload = True`.
+- **0.1 Custom Payload File** : `File`: the binary file (EXE, DLL, MSI, etc.) to sign. Replaces the wrapped payload entirely. Retrieved at build time via `getFileFromMythic`. Only visible when `0.0 Custom Payload = True`.
 
 ### 1.0 · Signing Mode
 
@@ -197,7 +197,7 @@ Installed via the [Dockerfile](Payload_Type/signet/Dockerfile):
 
 | Package | Version | Purpose |
 |---|---|---|
-| `mythic_container` | 0.6.16 | Mythic SDK (PayloadType, BuildParameter, RPC) |
+| `mythic_container` | 0.7.0rc9 | Mythic v4 SDK (PayloadType, BuildParameter, RPC) |
 | `cryptography` | latest | X.509 certificate generation, PKCS#12, RSA key generation |
 | `osslsigncode` | apt package | Authenticode signing of PE/MSI binaries |
 | `openssl` | apt package | TLS library dependency |
@@ -211,7 +211,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         osslsigncode openssl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-RUN pip3 install mythic_container==0.6.16 cryptography
+RUN pip3 install mythic_container==0.7.0rc9 cryptography
+RUN pip3 install --upgrade --force-reinstall "grpcio>=1.78.0"
 WORKDIR /Mythic/
 COPY [".", "."]
 CMD ["python3", "main.py"]

@@ -27,11 +27,35 @@ class SignetWrapper(PayloadType):
     ]
 
     wrapper = True
-    wrapped_payloads = [
-        "apollo", "athena", "merlin", "kharon",
-        "sliver", "xenon", "nimplant", "hannibal",
-        "starburst", "poopsie", "erebus_wrapper",
-        "emeraldstrike"
+    wrapper_payload_requirements = [
+        WrapperPayloadRequirement(
+            requires=WrapperPayloadRequirementRequires(
+                os=SupportedOS.Windows,
+                architecture=PayloadBuildMetadataArchitecture.X64,
+                format=PayloadBuildMetadataFormat.Exe,
+            ),
+        ),
+        WrapperPayloadRequirement(
+            requires=WrapperPayloadRequirementRequires(
+                os=SupportedOS.Windows,
+                architecture=PayloadBuildMetadataArchitecture.X86,
+                format=PayloadBuildMetadataFormat.Exe,
+            ),
+        ),
+        WrapperPayloadRequirement(
+            requires=WrapperPayloadRequirementRequires(
+                os=SupportedOS.Windows,
+                architecture=PayloadBuildMetadataArchitecture.X64,
+                format=PayloadBuildMetadataFormat.Dll,
+            ),
+        ),
+        WrapperPayloadRequirement(
+            requires=WrapperPayloadRequirementRequires(
+                os=SupportedOS.Windows,
+                architecture=PayloadBuildMetadataArchitecture.X86,
+                format=PayloadBuildMetadataFormat.Dll,
+            ),
+        ),
     ]
     c2_profiles = []
     agent_type = AgentType.Wrapper
@@ -42,9 +66,9 @@ class SignetWrapper(PayloadType):
     agent_code_path = Path(__file__).resolve().parent.parent / "certificate_store"
 
     build_parameters = [
-        # ── Custom Payload ────────────────────────────────────────────────
         BuildParameter(
             name="0.0 Custom Payload",
+            display_name="Custom Payload",
             group_name="0 - Custom Payload",
             parameter_type=BuildParameterType.Boolean,
             description=(
@@ -55,6 +79,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="0.1 Custom Payload File",
+            display_name="Custom Payload File",
             group_name="0 - Custom Payload",
             parameter_type=BuildParameterType.File,
             description="Binary file (EXE, DLL, MSI, etc.) to sign. Replaces the wrapped payload.",
@@ -64,9 +89,9 @@ class SignetWrapper(PayloadType):
             ],
         ),
 
-        # ── Signing Mode ──────────────────────────────────────────────────
         BuildParameter(
             name="1.0 Signing Mode",
+            display_name="Signing Mode",
             group_name="1 - Signing Mode",
             parameter_type=BuildParameterType.ChooseOne,
             description=(
@@ -85,9 +110,9 @@ class SignetWrapper(PayloadType):
             default_value="Generate CA + Cert",
         ),
 
-        # ── CA Upload ─────────────────────────────────────────────────────
         BuildParameter(
             name="2.0 CA File",
+            display_name="CA File",
             group_name="2 - Certificate Authority",
             parameter_type=BuildParameterType.File,
             description="CA certificate file. PFX/P12 files must contain both cert and key. PEM or DER files can contain just the certificate if the key is uploaded separately below.",
@@ -98,6 +123,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="2.0a CA Key File",
+            display_name="CA Key File",
             group_name="2 - Certificate Authority",
             parameter_type=BuildParameterType.File,
             description="Private key file for the CA certificate (PEM format). Only needed when the CA File above contains just the certificate.",
@@ -108,6 +134,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="2.1 CA Password",
+            display_name="CA Password",
             group_name="2 - Certificate Authority",
             parameter_type=BuildParameterType.String,
             description="Password for the uploaded CA file (leave empty if none).",
@@ -119,6 +146,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="2.2 Inherit CA Attributes",
+            display_name="Inherit CA Attributes",
             group_name="2 - Certificate Authority",
             parameter_type=BuildParameterType.Boolean,
             description="Copy CN, C, O, OU, etc. from the CA certificate into the code signing certificate subject.",
@@ -129,9 +157,9 @@ class SignetWrapper(PayloadType):
             ],
         ),
 
-        # ── Signing Cert Upload ───────────────────────────────────────────
         BuildParameter(
             name="3.0 Signing Certificate File",
+            display_name="Signing Certificate File",
             group_name="3 - Signing Certificate",
             parameter_type=BuildParameterType.File,
             description="PFX/P12 code signing certificate to use directly.",
@@ -142,6 +170,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="3.1 Signing Certificate Password",
+            display_name="Signing Certificate Password",
             group_name="3 - Signing Certificate",
             parameter_type=BuildParameterType.String,
             description="Password for the uploaded signing certificate.",
@@ -155,6 +184,7 @@ class SignetWrapper(PayloadType):
         # ── Clone from URL ────────────────────────────────────────────────
         BuildParameter(
             name="4.0 Clone URL",
+            display_name="Clone URL",
             group_name="4 - Clone Certificate",
             parameter_type=BuildParameterType.String,
             description="HTTPS URL whose certificate subject fields will be cloned (e.g. https://microsoft.com).",
@@ -168,6 +198,7 @@ class SignetWrapper(PayloadType):
         # ── Certificate Subject (manual) ─────────────────────────────────
         BuildParameter(
             name="5.0 Common Name (CN)",
+            display_name="Common Name (CN)",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="Common Name for the code signing certificate.",
@@ -181,6 +212,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="5.1 Country (C)",
+            display_name="Country (C)",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="Two-letter country code (ISO 3166-1 alpha-2).",
@@ -194,6 +226,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="5.2 Organization (O)",
+            display_name="Organization (O)",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="Organization name.",
@@ -207,6 +240,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="5.3 Organizational Unit (OU)",
+            display_name="Organizational Unit (OU)",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="Organizational Unit (optional).",
@@ -220,6 +254,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="5.4 State/Province (ST)",
+            display_name="State/Province (ST)",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="State or Province (optional).",
@@ -233,6 +268,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="5.5 Locality (L)",
+            display_name="Locality (L)",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="City or Locality (optional).",
@@ -246,6 +282,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="5.6 Email",
+            display_name="Email",
             group_name="5 - Certificate Subject",
             parameter_type=BuildParameterType.String,
             description="Email address embedded in the certificate (optional).",
@@ -261,6 +298,7 @@ class SignetWrapper(PayloadType):
         # ── Signing Options ───────────────────────────────────────────────
         BuildParameter(
             name="6.0 Key Size",
+            display_name="Key Size",
             group_name="6 - Signing Options",
             parameter_type=BuildParameterType.ChooseOne,
             description="RSA key size for generated certificates.",
@@ -272,6 +310,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="6.1 Hash Algorithm",
+            display_name="Hash Algorithm",
             group_name="6 - Signing Options",
             parameter_type=BuildParameterType.ChooseOne,
             description="Digest algorithm for the Authenticode signature.",
@@ -280,6 +319,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="6.2 Certificate Validity (days)",
+            display_name="Certificate Validity (days)",
             group_name="6 - Signing Options",
             parameter_type=BuildParameterType.String,
             description="How many days the generated certificates are valid.",
@@ -290,6 +330,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="6.3 Timestamp Server",
+            display_name="Timestamp Server",
             group_name="6 - Signing Options",
             parameter_type=BuildParameterType.String,
             description="RFC 3161 timestamp server URL. Leave empty to skip timestamping.",
@@ -298,6 +339,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="6.4 Signature Description",
+            display_name="Signature Description",
             group_name="6 - Signing Options",
             parameter_type=BuildParameterType.String,
             description="Description string embedded in the Authenticode signature (optional).",
@@ -307,6 +349,7 @@ class SignetWrapper(PayloadType):
 
         BuildParameter(
             name="7.0 Export CA Certificate",
+            display_name="Export CA Certificate",
             group_name="7 - Output",
             parameter_type=BuildParameterType.Boolean,
             description="Register the generated CA certificate as a Mythic file so it can be reused in future builds.",
@@ -318,6 +361,7 @@ class SignetWrapper(PayloadType):
         ),
         BuildParameter(
             name="7.1 Export Signing Certificate",
+            display_name="Export Signing Certificate",
             group_name="7 - Output",
             parameter_type=BuildParameterType.Boolean,
             description="Register the generated code signing PFX as a Mythic file.",
@@ -351,7 +395,6 @@ class SignetWrapper(PayloadType):
     async def build(self) -> BuildResponse:
         resp = BuildResponse(status=BuildStatus.Error)
 
-        # ── Step 1: Gather payload (custom upload or wrapped) ─────────────
         custom_enabled = self.get_parameter("0.0 Custom Payload")
         payload_bytes = None
 
@@ -376,7 +419,6 @@ class SignetWrapper(PayloadType):
             payload_bytes = self.wrapped_payload
             await self._step(resp, "Gathering Payload", f"Received {len(payload_bytes)} bytes from wrapped payload.")
 
-        # ── Step 2: Prepare signing certificate ───────────────────────────
         mode = self.get_parameter("1.0 Signing Mode")
         hash_algo = self.get_parameter("6.1 Hash Algorithm")
         pfx_bytes = None
@@ -413,7 +455,6 @@ class SignetWrapper(PayloadType):
 
         await self._step(resp, "Preparing Certificate", "\n".join(build_log) if build_log else "Certificate ready.")
 
-        # ── Step 3: Sign the payload ──────────────────────────────────────
         timestamp_url = self.get_parameter("6.3 Timestamp Server") or ""
         description = self.get_parameter("6.4 Signature Description") or ""
 

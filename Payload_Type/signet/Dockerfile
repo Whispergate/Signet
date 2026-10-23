@@ -5,7 +5,8 @@ RUN apt-get update \
         osslsigncode openssl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install mythic_container==0.6.16 cryptography
+RUN pip3 install mythic_container==0.7.0rc9 cryptography
+RUN pip3 install --upgrade --force-reinstall "grpcio>=1.78.0"
 
 WORKDIR /Mythic/
 
