@@ -37,7 +37,7 @@ Upload any EXE, DLL, MSI, or other binary file directly via the `0.0 Custom Payl
 ## Getting started
 
 ```bash
-sudo ./mythic-cli install github https://github.com/<your-org>/Signet.git
+sudo ./mythic-cli install github https://github.com/Whispergate/Signet.git
 ```
 
 Then create a Signet payload from the Mythic UI, select a wrapped agent payload, and configure the signing mode and certificate options.
